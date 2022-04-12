@@ -1,8 +1,14 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import type { AppProps } from "next/app"
 import { QueryClient, QueryClientProvider } from "react-query"
-import { useRef } from "react"
+import { ReactNode, useRef } from "react"
 import { Web3WalletProvider } from "../web3-wallet/useWeb3Wallet"
+
+declare module "react-query/types/react/QueryClientProvider" {
+    interface QueryClientProviderProps {
+        children?: ReactNode
+    }
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
     const qcRef = useRef(

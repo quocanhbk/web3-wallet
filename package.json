@@ -2,6 +2,7 @@
     "name": "next",
     "version": "0.1.0",
     "private": true,
+    "author": "La Quoc Anh",
     "scripts": {
         "dev": "next dev",
         "build": "next build",
