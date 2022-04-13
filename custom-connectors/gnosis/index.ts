@@ -14,7 +14,7 @@ export class Gnosis extends Connector {
         super(actions)
     }
 
-    private async startListening(chainId?: number) {
+    private async startListening() {
         this.sdk = new SafeAppsSDK()
         const isSafe = await this.isSafeApp()
         console.log(isSafe)
@@ -27,9 +27,9 @@ export class Gnosis extends Connector {
         this.customProvider = new ethers.providers.Web3Provider(new SafeAppProvider(this.safe, this.sdk))
     }
 
-    public async activate(chainId?: number): Promise<void> {
+    public async activate(): Promise<void> {
         this.actions.startActivation()
-        await this.startListening(chainId).catch((error: Error) => {
+        await this.startListening().catch((error: Error) => {
             this.actions.reportError(error)
         })
 
