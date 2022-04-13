@@ -12,7 +12,7 @@ const Home: NextPage = () => {
 
     const [selectedChain, setSelectedChain] = useState<string>()
     const [message, setMessage] = useState("")
-
+    const [greet, setGreet] = useState("")
     useEffect(() => {
         if (error) {
             if (error.message.includes("Disconnected from chain")) {
@@ -36,6 +36,24 @@ const Home: NextPage = () => {
         enabled: !!contractCaller.current && !!account && chain?.chainId === 1,
         initialData: 0,
     })
+
+    const { data: greeting } = useQuery("greeting", () => contractCaller.current?.Greeter.getGreeting(), {
+        enabled: !!contractCaller.current && !!account && chain?.chainId === 1,
+        initialData: "",
+    })
+
+    const { mutate: mutateGreeting, isLoading } = useMutation(
+        () => contractCaller.current!.Greeter.setGreeting(greet),
+        {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Greeting updated",
+                    status: "success",
+                })
+            },
+        }
+    )
 
     const { mutate: mutateSign } = useMutation(() => contractCaller.current!.sign(message), {
         onSuccess: data => {
@@ -121,6 +139,7 @@ const Home: NextPage = () => {
                                     value={selectedChain}
                                     onChange={e => setSelectedChain(e.target.value)}
                                     flex={1}
+                                    size="sm"
                                 >
                                     {Object.entries(CHAINS).map(([key, value]) => (
                                         <option value={key} key={key}>
@@ -129,10 +148,12 @@ const Home: NextPage = () => {
                                     ))}
                                 </Select>
                                 <Button
-                                    ml={4}
-                                    colorScheme="yellow"
+                                    ml={2}
+                                    colorScheme="blue"
+                                    w="6rem"
                                     isDisabled={!selectedChain}
                                     onClick={() => activate(connector.id, parseInt(selectedChain!))}
+                                    size="sm"
                                 >
                                     Switch
                                 </Button>
@@ -142,16 +163,48 @@ const Home: NextPage = () => {
                             <Text mb={2} fontSize={"lg"} fontWeight="semibold">
                                 Contract Interaction
                             </Text>
-                            <Text color="pink.300">Wrapped Ethereum</Text>
-                            <Text fontSize={"sm"}>Balance: {weth}</Text>
+                            <Box mb={4}>
+                                <Text color="pink.300">Wrapped Ethereum</Text>
+                                <Text fontSize={"sm"}>Balance: {weth}</Text>
+                            </Box>
+                            <Text color="blue.300">Greeter</Text>
+                            <Text fontSize={"sm"}>Greeting: {greeting}</Text>
+                            <Text fontSize={"sm"} mb={1}>
+                                Set greeting:
+                            </Text>
+                            <Flex>
+                                <Input
+                                    rounded="md"
+                                    flex={1}
+                                    value={greet}
+                                    onChange={e => setGreet(e.target.value)}
+                                    size="sm"
+                                />
+                                <Button
+                                    isLoading={isLoading}
+                                    ml={2}
+                                    w="6rem"
+                                    colorScheme={"blue"}
+                                    onClick={() => mutateGreeting()}
+                                    size="sm"
+                                >
+                                    Update
+                                </Button>
+                            </Flex>
                         </Box>
                         <Box mb={4} bg="gray.800" rounded={"lg"} p={4} border="1px" borderColor={"whiteAlpha.200"}>
                             <Text mb={2} fontSize={"lg"} fontWeight="semibold">
                                 Signature
                             </Text>
                             <Flex>
-                                <Input flex={1} value={message} onChange={e => setMessage(e.target.value)} />
-                                <Button ml={4} colorScheme={"blue"} onClick={() => mutateSign()}>
+                                <Input
+                                    rounded="md"
+                                    flex={1}
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                    size="sm"
+                                />
+                                <Button ml={2} w="6rem" colorScheme={"blue"} onClick={() => mutateSign()} size="sm">
                                     Sign
                                 </Button>
                             </Flex>
