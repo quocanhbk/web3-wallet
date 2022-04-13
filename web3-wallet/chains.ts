@@ -38,10 +38,6 @@ export const CHAINS: {
         urls: ["https://mainnet.infura.io/v3/47a3dff66e3e49c2b8fff75f0eb95c90"],
         name: "Mainnet",
     },
-    4: {
-        urls: ["https://rinkeby.infura.io/v3/47a3dff66e3e49c2b8fff75f0eb95c90"],
-        name: "Rinkeby",
-    },
     137: {
         urls: ["https://rpc-mainnet.matic.network"],
         name: "Matic Mainnet",
