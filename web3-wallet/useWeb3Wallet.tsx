@@ -9,10 +9,11 @@ import { CoinbaseWallet } from "@web3-react/coinbase-wallet"
 import { MetaMask } from "@web3-react/metamask"
 import { Connector } from "@web3-react/types"
 import { Sequence } from "../custom-connectors/sequence"
+import { Gnosis } from "../custom-connectors/gnosis"
 
 export type Connectors = [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][]
 
-export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet" | "sequence"
+export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet" | "sequence" | "gnosis"
 
 export type ConnectorInfo = { id: ConnectorId; name: string; connector: Connector }
 
@@ -37,12 +38,19 @@ const getConnectorInfo = (connector: Connector): ConnectorInfo => {
             name: "Coinbase Wallet",
             connector,
         }
-    } else
+    } else if (connector instanceof Sequence) {
         return {
             id: "sequence",
             name: "Sequence",
             connector,
         }
+    } else {
+        return {
+            id: "gnosis",
+            name: "Gnosis",
+            connector,
+        }
+    }
 }
 
 const useWeb3WalletState = (
@@ -83,7 +91,7 @@ const useWeb3WalletState = (
     )
 
     return {
-        account,
+        account: account?.toLowerCase(),
         chain: chainId ? { ...CHAINS[chainId], chainId } : undefined,
         activate,
         deactivate,
@@ -137,12 +145,15 @@ export const Web3WalletProvider = ({ children, config }: Web3WalletProviderProps
 
     const [sequence, sequenceHooks] = useMemo(() => initializeConnector<Sequence>(actions => new Sequence(actions)), [])
 
-    const connectors: [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][] = useMemo(
+    const [gnosis, gnosisHooks] = useMemo(() => initializeConnector<Gnosis>(actions => new Gnosis(actions)), [])
+
+    const connectors: [MetaMask | WalletConnect | CoinbaseWallet | Sequence | Gnosis, Web3ReactHooks][] = useMemo(
         () => [
             [metaMask, metaMaskHooks],
             [walletConnect, walletConnectHooks],
             [coinbaseWallet, coinbaseHooks],
             [sequence, sequenceHooks],
+            [gnosis, gnosisHooks],
         ],
         [
             metaMask,
@@ -153,6 +164,8 @@ export const Web3WalletProvider = ({ children, config }: Web3WalletProviderProps
             coinbaseHooks,
             sequence,
             sequenceHooks,
+            gnosis,
+            gnosisHooks,
         ]
     )
 
@@ -161,6 +174,7 @@ export const Web3WalletProvider = ({ children, config }: Web3WalletProviderProps
         walletConnect: getConnectorInfo(walletConnect),
         coinbaseWallet: getConnectorInfo(coinbaseWallet),
         sequence: getConnectorInfo(sequence),
+        gnosis: getConnectorInfo(gnosis),
     }
 
     return (

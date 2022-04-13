@@ -1,9 +1,8 @@
-import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input } from "@chakra-ui/react"
+import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input, Img } from "@chakra-ui/react"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
 import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
-import { sequence } from "0xsequence"
 import { useRouter } from "next/router"
 const Home: NextPage = () => {
     const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller } =
@@ -58,47 +57,54 @@ const Home: NextPage = () => {
         },
     })
 
-    const router = useRouter()
+    const connectors = [
+        { connector: "metaMask", image: "/icons/metamask.svg", name: "MetaMask" },
+        { connector: "walletConnect", image: "/icons/walletConnect.svg", name: "WalletConnect" },
+        { connector: "coinbaseWallet", image: "/icons/coinbase.png", name: "Coinbase Wallet" },
+        { connector: "sequence", image: "/icons/sequence.svg", name: "Sequence" },
+        { connector: "gnosis", image: "/icons/sequence.svg", name: "Gnosis" },
+    ]
 
     return (
         <Box h="100vh" bg="gray.900" color="whiteAlpha.900" p={8}>
             <Heading mb={4}>WALLET DEMO</Heading>
-            <Stack spacing={8} w="20rem" maxW="full">
-                <Box border="1px" borderColor={"whiteAlpha.200"} p={4} bg="gray.800" rounded="lg">
-                    <Stack>
-                        <Text color="yellow.300">Connector: {connector.name}</Text>
-                        <Text color={isActive ? "green.300" : "red.300"}>
-                            Status: {isActive ? "Connected" : "Not connected"}
-                        </Text>
-                        <Text color="messenger.300" isTruncated>
-                            Account: {account}
-                        </Text>
-                        <Text color="cyan.300" isTruncated>
-                            Balance: {balance}
-                        </Text>
-                        <Text color="teal.300" isTruncated>
-                            Chain: {chain?.name}
-                        </Text>
-                    </Stack>
-                </Box>
-                <Box w="full" h="1px" bg="whiteAlpha.200" />
+            <Box w="20rem" maxW="full">
                 {!isActive ? (
                     <Stack spacing={4}>
-                        <Button colorScheme={"orange"} onClick={() => handleConnect("metaMask")}>
-                            MetaMask
-                        </Button>
-                        <Button colorScheme={"blue"} onClick={() => handleConnect("walletConnect")}>
-                            WalletConnect
-                        </Button>
-                        <Button colorScheme={"purple"} onClick={() => handleConnect("coinbaseWallet")}>
-                            Coinbase
-                        </Button>
-                        <Button colorScheme={"teal"} onClick={() => handleConnect("sequence")}>
-                            Try Sequence Wallet
-                        </Button>
+                        {connectors.map(c => (
+                            <Button
+                                bg="transparent"
+                                border="1px"
+                                borderColor={"whiteAlpha.200"}
+                                _hover={{ bg: "whiteAlpha.200" }}
+                                _active={{ bg: "whiteAlpha.100" }}
+                                key={c.connector}
+                                onClick={() => handleConnect(c.connector as ConnectorId)}
+                                leftIcon={<Img src={c.image} boxSize={"1.5rem"} rounded="lg" />}
+                            >
+                                {c.name}
+                            </Button>
+                        ))}
                     </Stack>
                 ) : (
                     <Box>
+                        <Box mb={4} border="1px" borderColor={"whiteAlpha.200"} p={4} bg="gray.800" rounded="lg">
+                            <Stack>
+                                <Text color="yellow.300">Connector: {connector.name}</Text>
+                                <Text color={isActive ? "green.300" : "red.300"}>
+                                    Status: {isActive ? "Connected" : "Not connected"}
+                                </Text>
+                                <Text color="messenger.300" isTruncated>
+                                    Account: {account}
+                                </Text>
+                                <Text color="cyan.300" isTruncated>
+                                    Balance: {balance}
+                                </Text>
+                                <Text color="teal.300" isTruncated>
+                                    Chain: {chain?.name}
+                                </Text>
+                            </Stack>
+                        </Box>
                         <Box mb={4} bg="gray.800" rounded={"lg"} p={4} border="1px" borderColor={"whiteAlpha.200"}>
                             <Text mb={2} fontSize={"lg"} fontWeight="semibold">
                                 Switch Chain
@@ -149,7 +155,7 @@ const Home: NextPage = () => {
                         </Button>
                     </Box>
                 )}
-            </Stack>
+            </Box>
         </Box>
     )
 }
