@@ -2,11 +2,13 @@ import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input } from
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
-import useWeb3Wallet, { CHAINS } from "../web3-wallet"
-
+import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
+import { sequence } from "0xsequence"
+import { useRouter } from "next/router"
 const Home: NextPage = () => {
     const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller } =
         useWeb3Wallet()
+
     const toast = useToast({ duration: 2500, variant: "subtle" })
 
     const [selectedChain, setSelectedChain] = useState<string>()
@@ -25,6 +27,11 @@ const Home: NextPage = () => {
             }
         }
     }, [error?.message])
+
+    const handleConnect = async (connectorId: ConnectorId) => {
+        await activate(connectorId)
+        console.log(account)
+    }
 
     const { data: weth } = useQuery("weth", () => contractCaller.current?.WETH.getBalance(account!), {
         enabled: !!contractCaller.current && !!account && chain?.chainId === 1,
@@ -51,6 +58,8 @@ const Home: NextPage = () => {
         },
     })
 
+    const router = useRouter()
+
     return (
         <Box h="100vh" bg="gray.900" color="whiteAlpha.900" p={8}>
             <Heading mb={4}>WALLET DEMO</Heading>
@@ -75,14 +84,17 @@ const Home: NextPage = () => {
                 <Box w="full" h="1px" bg="whiteAlpha.200" />
                 {!isActive ? (
                     <Stack spacing={4}>
-                        <Button colorScheme={"orange"} onClick={() => activate("metaMask")}>
+                        <Button colorScheme={"orange"} onClick={() => handleConnect("metaMask")}>
                             MetaMask
                         </Button>
-                        <Button colorScheme={"blue"} onClick={() => activate("walletConnect")}>
+                        <Button colorScheme={"blue"} onClick={() => handleConnect("walletConnect")}>
                             WalletConnect
                         </Button>
-                        <Button colorScheme={"purple"} onClick={() => activate("coinbaseWallet")}>
+                        <Button colorScheme={"purple"} onClick={() => handleConnect("coinbaseWallet")}>
                             Coinbase
+                        </Button>
+                        <Button colorScheme={"teal"} onClick={() => handleConnect("sequence")}>
+                            Try Sequence Wallet
                         </Button>
                     </Stack>
                 ) : (

@@ -10,6 +10,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "0xsequence": "^0.36.9",
         "@chakra-ui/react": "^1.8.7",
         "@coinbase/wallet-sdk": "^3.0.4",
         "@emotion/react": "^11",

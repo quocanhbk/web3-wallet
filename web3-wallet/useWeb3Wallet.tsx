@@ -8,10 +8,11 @@ import { ContractCaller } from "../contracts"
 import { CoinbaseWallet } from "@web3-react/coinbase-wallet"
 import { MetaMask } from "@web3-react/metamask"
 import { Connector } from "@web3-react/types"
+import { Sequence } from "../custom-connectors/sequence"
 
-export type Connectors = [MetaMask | WalletConnect | CoinbaseWallet, Web3ReactHooks][]
+export type Connectors = [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][]
 
-export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet"
+export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet" | "sequence"
 
 export type ConnectorInfo = { id: ConnectorId; name: string; connector: Connector }
 
@@ -30,13 +31,18 @@ const getConnectorInfo = (connector: Connector): ConnectorInfo => {
             name: "WalletConnect",
             connector,
         }
-    } else {
+    } else if (connector instanceof CoinbaseWallet) {
         return {
             id: "coinbaseWallet",
             name: "Coinbase Wallet",
             connector,
         }
-    }
+    } else
+        return {
+            id: "sequence",
+            name: "Sequence",
+            connector,
+        }
 }
 
 const useWeb3WalletState = (
@@ -48,7 +54,7 @@ const useWeb3WalletState = (
 
     const activate = async (connectorId: ConnectorId, chainId?: number) => {
         const connector = connectorsData[connectorId].connector
-        connector instanceof WalletConnect
+        connector instanceof WalletConnect || connector instanceof Sequence
             ? await connector.activate(chainId)
             : await connector.activate(!chainId ? undefined : getAddChainParameters(chainId))
     }
@@ -129,19 +135,32 @@ export const Web3WalletProvider = ({ children, config }: Web3WalletProviderProps
         [config.coinbaseWallet]
     )
 
-    const connectors: [MetaMask | WalletConnect | CoinbaseWallet, Web3ReactHooks][] = useMemo(
+    const [sequence, sequenceHooks] = useMemo(() => initializeConnector<Sequence>(actions => new Sequence(actions)), [])
+
+    const connectors: [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][] = useMemo(
         () => [
             [metaMask, metaMaskHooks],
             [walletConnect, walletConnectHooks],
             [coinbaseWallet, coinbaseHooks],
+            [sequence, sequenceHooks],
         ],
-        [metaMask, metaMaskHooks, walletConnect, walletConnectHooks, coinbaseWallet, coinbaseHooks]
+        [
+            metaMask,
+            metaMaskHooks,
+            walletConnect,
+            walletConnectHooks,
+            coinbaseWallet,
+            coinbaseHooks,
+            sequence,
+            sequenceHooks,
+        ]
     )
 
     const connectorsData = {
         metaMask: getConnectorInfo(metaMask),
         walletConnect: getConnectorInfo(walletConnect),
         coinbaseWallet: getConnectorInfo(coinbaseWallet),
+        sequence: getConnectorInfo(sequence),
     }
 
     return (
