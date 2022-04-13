@@ -62,7 +62,7 @@ const Home: NextPage = () => {
         { connector: "walletConnect", image: "/icons/walletConnect.svg", name: "WalletConnect" },
         { connector: "coinbaseWallet", image: "/icons/coinbase.png", name: "Coinbase Wallet" },
         { connector: "sequence", image: "/icons/sequence.svg", name: "Sequence" },
-        { connector: "gnosis", image: "/icons/sequence.svg", name: "Gnosis" },
+        { connector: "gnosis", image: "/icons/gnosis.png", name: "Gnosis" },
     ]
 
     return (

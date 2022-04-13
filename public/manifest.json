@@ -1,21 +1,21 @@
 {
-    "short_name": "Sipher",
-    "name": "Sipher",
-    "description": "Welcome to Sipher",
-    "iconPath": "/images/general/main_icon.ico",
+    "short_name": "Web3 Wallet",
+    "name": "Web3 Wallet",
+    "description": "Web3 Wallet",
+    "iconPath": "https://sipherstorage.s3.ap-southeast-1.amazonaws.com/web_meta/atherlabs.xyz_icon.svg",
     "icons": [
         {
-            "src": "/images/general/main_icon.ico",
+            "src": "https://sipherstorage.s3.ap-southeast-1.amazonaws.com/web_meta/atherlabs.xyz_icon.svg",
             "sizes": "64x64 32x32 24x24 16x16",
             "type": "image/x-icon"
         },
         {
-            "src": "logo192.png",
+            "src": "https://sipherstorage.s3.ap-southeast-1.amazonaws.com/web_meta/atherlabs.xyz_icon.svg",
             "type": "image/png",
             "sizes": "192x192"
         },
         {
-            "src": "logo512.png",
+            "src": "https://sipherstorage.s3.ap-southeast-1.amazonaws.com/web_meta/atherlabs.xyz_icon.svg",
             "type": "image/png",
             "sizes": "512x512"
         }
