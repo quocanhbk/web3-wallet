@@ -30,6 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                             rpc: {
                                 1: "https://mainnet.infura.io/v3/47a3dff66e3e49c2b8fff75f0eb95c90",
                                 4: "https://rinkeby.infura.io/v3/47a3dff66e3e49c2b8fff75f0eb95c90",
+                                137: "https://polygon-mainnet.infura.io/v3/8e3937db21b341ceac1607d35ae551dd",
                             },
                         },
                         coinbaseWallet: {

@@ -1,4 +1,17 @@
-import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input, Img, Wrap, WrapItem } from "@chakra-ui/react"
+import {
+    Box,
+    Heading,
+    Stack,
+    Text,
+    Button,
+    useToast,
+    Select,
+    Flex,
+    Input,
+    Img,
+    chakra,
+    ChakraProvider,
+} from "@chakra-ui/react"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
@@ -83,9 +96,11 @@ const Home: NextPage = () => {
     ]
 
     return (
-        <Box h="100vh" bg="gray.900" color="whiteAlpha.900" p={8}>
-            <Heading mb={4}>WALLET DEMO</Heading>
-            <Box w="20rem" maxW="full">
+        <Box h="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
+            <Box w="25rem" maxW="full">
+                <Heading mb={4} textAlign="center">
+                    Web3Wallet Demo
+                </Heading>
                 {!isActive ? (
                     <Stack spacing={4}>
                         {connectors.map(c => (
@@ -168,7 +183,12 @@ const Home: NextPage = () => {
                                 <Text fontSize={"sm"}>Balance: {weth}</Text>
                             </Box>
                             <Text color="blue.300">Greeter</Text>
-                            <Text fontSize={"sm"}>Greeting: {greeting}</Text>
+                            <Text fontSize={"sm"}>
+                                Greeting:{" "}
+                                <chakra.span color="green.400" fontWeight={"semibold"}>
+                                    {greeting}
+                                </chakra.span>{" "}
+                            </Text>
                             <Text fontSize={"sm"} mb={1}>
                                 Set greeting:
                             </Text>
