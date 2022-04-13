@@ -1,4 +1,4 @@
-import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input, Img } from "@chakra-ui/react"
+import { Box, Heading, Stack, Text, Button, useToast, Select, Flex, Input, Img, Wrap, WrapItem } from "@chakra-ui/react"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
@@ -72,7 +72,9 @@ const Home: NextPage = () => {
                 {!isActive ? (
                     <Stack spacing={4}>
                         {connectors.map(c => (
-                            <Button
+                            <Box
+                                rounded="lg"
+                                p={2}
                                 bg="transparent"
                                 border="1px"
                                 borderColor={"whiteAlpha.200"}
@@ -80,10 +82,15 @@ const Home: NextPage = () => {
                                 _active={{ bg: "whiteAlpha.100" }}
                                 key={c.connector}
                                 onClick={() => handleConnect(c.connector as ConnectorId)}
-                                leftIcon={<Img src={c.image} boxSize={"1.5rem"} rounded="lg" />}
+                                cursor="pointer"
                             >
-                                {c.name}
-                            </Button>
+                                <Flex align="center" w="full" justify="center">
+                                    <Img src={c.image} boxSize={"1.5rem"} rounded="lg" />
+                                    <Text ml={2} fontSize="sm">
+                                        {c.name}
+                                    </Text>
+                                </Flex>
+                            </Box>
                         ))}
                     </Stack>
                 ) : (
