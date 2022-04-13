@@ -40,7 +40,7 @@ export const CHAINS: {
     },
     137: {
         urls: ["https://rpc-mainnet.matic.network"],
-        name: "Matic Mainnet",
+        name: "Polygon",
         nativeCurrency: {
             name: "MATIC",
             symbol: "MATIC",

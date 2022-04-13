@@ -16,7 +16,7 @@ import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
 import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
-import { useRouter } from "next/router"
+
 const Home: NextPage = () => {
     const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller } =
         useWeb3Wallet()
