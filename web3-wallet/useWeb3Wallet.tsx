@@ -90,6 +90,14 @@ const useWeb3WalletState = (
         }
     )
 
+    const sign = async (message: string) => {
+        if (connector instanceof Gnosis) {
+            return await connector.sdk!.txs.signMessage(message).then(res => res.safeTxHash)
+        } else {
+            return contractCaller.current!.sign(message)
+        }
+    }
+
     return {
         account: account?.toLowerCase(),
         chain: chainId ? { ...CHAINS[chainId], chainId } : undefined,
@@ -101,6 +109,7 @@ const useWeb3WalletState = (
         provider,
         balance,
         contractCaller,
+        sign,
     }
 }
 

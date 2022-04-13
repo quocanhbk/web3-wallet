@@ -1,5 +1,5 @@
-import { ethers, providers } from "ethers"
-import { GREETER_ABI, WETH_ADDRESS } from "../constant"
+import { providers } from "ethers"
+import { WETH_ADDRESS } from "../constant"
 import Greeter from "./Greeter"
 
 import WETH from "./WETH"

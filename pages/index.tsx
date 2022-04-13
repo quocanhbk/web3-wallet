@@ -18,7 +18,7 @@ import { useMutation, useQuery } from "react-query"
 import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
 
 const Home: NextPage = () => {
-    const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller } =
+    const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller, sign } =
         useWeb3Wallet()
 
     const toast = useToast({ duration: 2500, variant: "subtle" })
@@ -42,7 +42,6 @@ const Home: NextPage = () => {
 
     const handleConnect = async (connectorId: ConnectorId) => {
         await activate(connectorId)
-        console.log(account)
     }
 
     const { data: weth } = useQuery("weth", () => contractCaller.current?.WETH.getBalance(account!), {
@@ -68,13 +67,14 @@ const Home: NextPage = () => {
         }
     )
 
-    const { mutate: mutateSign } = useMutation(() => contractCaller.current!.sign(message), {
+    const { mutate: mutateSign } = useMutation(() => sign(message), {
         onSuccess: data => {
             toast({
                 title: "Signature",
                 description: `${data.slice(0, 25)}...${data.slice(-25)}`,
                 status: "success",
             })
+            console.log("Signature:", data)
             setMessage("")
         },
         onError: (error: any) => {
@@ -93,6 +93,7 @@ const Home: NextPage = () => {
         { connector: "walletConnect", image: "/icons/walletConnect.svg", name: "WalletConnect" },
         { connector: "coinbaseWallet", image: "/icons/coinbase.png", name: "Coinbase Wallet" },
         { connector: "sequence", image: "/icons/sequence.svg", name: "Sequence" },
+        { connector: "gnosis", image: "/icons/gnosis.png", name: "Gnosis Safe" },
     ]
 
     return (

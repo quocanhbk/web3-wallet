@@ -17,7 +17,6 @@ export class Gnosis extends Connector {
     private async startListening() {
         this.sdk = new SafeAppsSDK()
         const isSafe = await this.isSafeApp()
-        console.log(isSafe)
         if (!isSafe) {
             window.open("https://gnosis-safe.io/app", "_blank")
             return
@@ -34,7 +33,6 @@ export class Gnosis extends Connector {
         })
 
         if (this.safe) {
-            console.log("Safe", this.safe)
             this.actions.update({ accounts: [this.safe!.safeAddress], chainId: this.safe!.chainId })
         }
     }
