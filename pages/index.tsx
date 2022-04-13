@@ -96,7 +96,7 @@ const Home: NextPage = () => {
     ]
 
     return (
-        <Box h="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
+        <Box minH="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
             <Box w="25rem" maxW="full">
                 <Heading mb={4} textAlign="center">
                     Web3Wallet Demo
