@@ -1,6 +1,6 @@
 import { initializeConnector, useWeb3React, Web3ReactHooks, Web3ReactProvider } from "@web3-react/core"
 import { WalletConnect } from "@web3-react/walletconnect"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { CHAINS, getAddChainParameters } from "./chains"
 import { useQuery } from "react-query"
 import { ethers, providers } from "ethers"
@@ -10,6 +10,7 @@ import { MetaMask } from "@web3-react/metamask"
 import { Connector } from "@web3-react/types"
 import { Sequence } from "../custom-connectors/sequence"
 import { Gnosis } from "../custom-connectors/gnosis"
+import { useToast } from "@chakra-ui/react"
 
 export type Connectors = [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][]
 
@@ -17,7 +18,7 @@ export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet" | "seq
 
 export type ConnectorInfo = { id: ConnectorId; name: string; connector: Connector }
 
-export type ConnectorsData = Record<ConnectorId, ConnectorInfo>
+export type ConnectorsData = Record<ConnectorId, ConnectorInfo & { hooks: Web3ReactHooks }>
 
 const getConnectorInfo = (connector: Connector): ConnectorInfo => {
     if (connector instanceof MetaMask) {
@@ -53,27 +54,53 @@ const getConnectorInfo = (connector: Connector): ConnectorInfo => {
     }
 }
 
-const useWeb3WalletState = (
-    connectorsData: Record<ConnectorId, { id: ConnectorId; name: string; connector: Connector }>
+const useWeb3WalletError = (
+    connectorsData: Record<ConnectorId, { id: ConnectorId; name: string; connector: Connector; hooks: Web3ReactHooks }>,
+    currentConnector: ConnectorId | null = null
 ) => {
-    const { connector, account, chainId, isActive, error, provider } = useWeb3React()
+    const metaMaskError = connectorsData.metaMask.hooks.useError()
+    const walletConnectError = connectorsData.walletConnect.hooks.useError()
+    const coinbaseError = connectorsData.coinbaseWallet.hooks.useError()
+
+    return currentConnector === "metaMask"
+        ? metaMaskError
+        : currentConnector === "walletConnect"
+        ? walletConnectError
+        : currentConnector === "coinbaseWallet"
+        ? coinbaseError
+        : null
+}
+
+const useWeb3WalletState = (
+    connectorsData: Record<ConnectorId, { id: ConnectorId; name: string; connector: Connector; hooks: Web3ReactHooks }>
+) => {
+    const toast = useToast({ duration: 2500, variant: "subtle" })
+
+    const { connector, account, chainId, isActive, provider } = useWeb3React()
 
     const contractCaller = useRef<ContractCaller | null>(null)
 
+    const [currentConnector, setCurrentConnector] = useState<ConnectorId | null>(null)
+
     const activate = async (connectorId: ConnectorId, chainId?: number) => {
-        const connector = connectorsData[connectorId].connector
-        connector instanceof WalletConnect || connector instanceof Sequence
-            ? await connector.activate(chainId)
-            : await connector.activate(!chainId ? undefined : getAddChainParameters(chainId))
+        connector.deactivate()
+        setCurrentConnector(connectorId)
+        const newConnector = connectorsData[connectorId].connector
+        newConnector instanceof WalletConnect || connector instanceof Sequence
+            ? await newConnector.activate(chainId)
+            : await newConnector.activate(!chainId ? undefined : getAddChainParameters(chainId))
     }
 
     const deactivate = () => {
+        setCurrentConnector(null)
         connector.deactivate()
     }
 
     useEffect(() => {
         connector.connectEagerly && connector.connectEagerly()
     }, [])
+
+    const error = useWeb3WalletError(connectorsData, currentConnector)
 
     useEffect(() => {
         if (provider) {
@@ -94,7 +121,6 @@ const useWeb3WalletState = (
         if (connector instanceof Gnosis) {
             return await connector.sdk!.txs.signMessage(message).then(res => res.safeTxHash)
         } else {
-            console.log("sign here")
             return contractCaller.current!.sign(message)
         }
     }
@@ -180,11 +206,11 @@ export const Web3WalletProvider = ({ children, config }: Web3WalletProviderProps
     )
 
     const connectorsData = {
-        metaMask: getConnectorInfo(metaMask),
-        walletConnect: getConnectorInfo(walletConnect),
-        coinbaseWallet: getConnectorInfo(coinbaseWallet),
-        sequence: getConnectorInfo(sequence),
-        gnosis: getConnectorInfo(gnosis),
+        metaMask: { ...getConnectorInfo(metaMask), hooks: metaMaskHooks },
+        walletConnect: { ...getConnectorInfo(walletConnect), hooks: walletConnectHooks },
+        coinbaseWallet: { ...getConnectorInfo(coinbaseWallet), hooks: coinbaseHooks },
+        sequence: { ...getConnectorInfo(sequence), hooks: sequenceHooks },
+        gnosis: { ...getConnectorInfo(gnosis), hooks: gnosisHooks },
     }
 
     return (

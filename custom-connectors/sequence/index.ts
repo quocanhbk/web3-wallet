@@ -14,6 +14,7 @@ export class Sequence extends Connector {
         if (this.sequence?.isConnected()) {
             this.sequence.disconnect()
         }
+
         this.sequence = new sequence.Wallet(chainId)
         await this.sequence.connect(this.options)
         this.provider = this.sequence.getProvider() as any

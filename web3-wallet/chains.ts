@@ -52,6 +52,16 @@ export const CHAINS: {
         },
         blockExplorerUrls: ["https://polygonscan.com"],
     },
+    80001: {
+        urls: ["https://rpc-mumbai.matic.today"],
+        name: "Mumbai Testnet",
+        nativeCurrency: {
+            name: "MATIC",
+            symbol: "MATIC",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+    },
 }
 
 export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce<{ [chainId: number]: string[] }>(

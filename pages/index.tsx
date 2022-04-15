@@ -56,7 +56,11 @@ const Home: NextPage = () => {
     }, [error?.message])
 
     const handleConnect = async (connectorId: ConnectorId) => {
-        await activate(connectorId)
+        try {
+            await activate(connectorId)
+        } catch (e) {
+            console.log("ERROR", e)
+        }
     }
 
     const { data: weth } = useQuery("weth", () => contractCaller.current?.WETH.getBalance(account!), {
@@ -251,7 +255,7 @@ const Home: NextPage = () => {
                     </Box>
                 )}
             </Box>
-            <Box borderTop={"1px"} borderColor="whiteAlpha.200" pt={4}>
+            <Box borderTop={"1px"} borderColor="whiteAlpha.200" pt={4} mt={8}>
                 <Wrap spacing={4}>
                     <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
                         <chakra.a
