@@ -261,7 +261,7 @@ const Home: NextPage = () => {
                                 </Button>
                             </Flex>
                         </Box>
-                        <Button colorScheme="red" onClick={() => deactivate()} w="full">
+                        <Button onClick={() => deactivate()} w="full" variant={"outline"} color="red.400">
                             Disconnect
                         </Button>
                     </Box>
