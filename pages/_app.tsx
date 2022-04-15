@@ -3,6 +3,7 @@ import type { AppProps } from "next/app"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ReactNode, useRef } from "react"
 import { Web3WalletProvider } from "../web3-wallet/useWeb3Wallet"
+import Head from "next/head"
 
 declare module "react-query/types/react/QueryClientProvider" {
     interface QueryClientProviderProps {
@@ -39,6 +40,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                         },
                     }}
                 >
+                    <Head>
+                        <title>Web3Wallet Demo</title>
+                    </Head>
                     <Component {...pageProps} />
                 </Web3WalletProvider>
             </QueryClientProvider>

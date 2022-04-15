@@ -5,12 +5,14 @@
 -   MetaMask
 -   WalletConnect
 -   Coinbase Wallet
+-   Sequence Wallet
+-   Gnosis Safe
 
 ## Functions
 
 -   Read address, balance
 -   Smart contract interaction
--   Switching network
+-   Switching between chains
 -   Eager connect
 -   Sign message
 

@@ -94,6 +94,7 @@ const useWeb3WalletState = (
         if (connector instanceof Gnosis) {
             return await connector.sdk!.txs.signMessage(message).then(res => res.safeTxHash)
         } else {
+            console.log("sign here")
             return contractCaller.current!.sign(message)
         }
     }

@@ -11,11 +11,26 @@ import {
     Img,
     chakra,
     ChakraProvider,
+    UnorderedList,
+    ListItem,
+    HStack,
+    Wrap,
+    WrapItem,
 } from "@chakra-ui/react"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
 import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
+
+const refs = [
+    { text: "Using Sequence on testnets", url: "https://docs.sequence.one/getting-started/testnet" },
+    { text: "MetaMask and Coinbase conflicts", url: "https://github.com/MetaMask/metamask-extension/issues/13622" },
+    {
+        text: "Gnosis Safe connection instruction",
+        url: "https://quocanhbk17.notion.site/Gnosis-Safe-Conection-Instruction-48a051a0e7904d58a87371240f510f56",
+    },
+    { text: "Source code", url: "https://github.com/quocanhbk/web3-wallet" },
+]
 
 const Home: NextPage = () => {
     const { account, connector, isActive, activate, deactivate, error, chain, balance, contractCaller, sign } =
@@ -97,8 +112,8 @@ const Home: NextPage = () => {
     ]
 
     return (
-        <Box minH="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
-            <Box w="25rem" maxW="full">
+        <Flex direction="column" minH="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
+            <Box w="25rem" maxW="full" flex={1}>
                 <Heading mb={4} textAlign="center">
                     Web3Wallet Demo
                 </Heading>
@@ -236,7 +251,41 @@ const Home: NextPage = () => {
                     </Box>
                 )}
             </Box>
-        </Box>
+            <Box borderTop={"1px"} borderColor="whiteAlpha.200" pt={4}>
+                <Wrap spacing={4}>
+                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
+                        <chakra.a
+                            href="https://docs.sequence.build/build-with-sequence/using-testnets"
+                            color="blue.400"
+                            target={"_blank"}
+                            fontWeight="semibold"
+                        >
+                            Using Sequence on testnets
+                        </chakra.a>
+                    </WrapItem>
+                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
+                        <chakra.a
+                            href="https://github.com/MetaMask/metamask-extension/issues/13622"
+                            color="blue.400"
+                            target={"_blank"}
+                            fontWeight="semibold"
+                        >
+                            MetaMask and Coinbase conflicts
+                        </chakra.a>
+                    </WrapItem>
+                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
+                        <chakra.a
+                            href="https://quocanhbk17.notion.site/Gnosis-Safe-Conection-Instruction-48a051a0e7904d58a87371240f510f56"
+                            color={"blue.400"}
+                            target={"_blank"}
+                            fontWeight={"semibold"}
+                        >
+                            Gnosis Safe Connection Instruction
+                        </chakra.a>
+                    </WrapItem>
+                </Wrap>
+            </Box>
+        </Flex>
     )
 }
 
