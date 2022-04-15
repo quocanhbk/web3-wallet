@@ -147,22 +147,34 @@ const Home: NextPage = () => {
                     </Stack>
                 ) : (
                     <Box>
-                        <Box mb={4} border="1px" borderColor={"whiteAlpha.200"} p={4} bg="gray.800" rounded="lg">
-                            <Stack>
-                                <Text color="yellow.300">Connector: {connector.name}</Text>
-                                <Text color={isActive ? "green.300" : "red.300"}>
-                                    Status: {isActive ? "Connected" : "Not connected"}
-                                </Text>
-                                <Text color="messenger.300" isTruncated>
-                                    Account: {account}
-                                </Text>
-                                <Text color="cyan.300" isTruncated>
-                                    Balance: {balance}
-                                </Text>
-                                <Text color="teal.300" isTruncated>
-                                    Chain: {chain?.name}
-                                </Text>
-                            </Stack>
+                        <Box
+                            mb={4}
+                            border="1px"
+                            borderColor={"whiteAlpha.200"}
+                            p={4}
+                            bg="gray.800"
+                            rounded="lg"
+                            overflow={"hidden"}
+                        >
+                            <Text mb={2} fontSize={"lg"} fontWeight="semibold">
+                                Wallet Information
+                            </Text>
+                            <Flex overflow={"hidden"} fontSize="sm">
+                                <Stack direction={"column"}>
+                                    <Text>Connector</Text>
+                                    <Text>Account</Text>
+                                    <Text>Chain</Text>
+                                    <Text>Balance</Text>
+                                </Stack>
+                                <Stack direction={"column"} overflow="hidden" ml={4} flex={1}>
+                                    <Text color="orange.400">{connector.name}</Text>
+                                    <Text w="full" isTruncated color="blue.400">
+                                        {account}
+                                    </Text>
+                                    <Text color="teal.400">{chain?.name}</Text>
+                                    <Text color="green.400">{balance}</Text>
+                                </Stack>
+                            </Flex>
                         </Box>
                         <Box mb={4} bg="gray.800" rounded={"lg"} p={4} border="1px" borderColor={"whiteAlpha.200"}>
                             <Text mb={2} fontSize={"lg"} fontWeight="semibold">
@@ -175,6 +187,7 @@ const Home: NextPage = () => {
                                     onChange={e => setSelectedChain(e.target.value)}
                                     flex={1}
                                     size="sm"
+                                    rounded="md"
                                 >
                                     {Object.entries(CHAINS).map(([key, value]) => (
                                         <option value={key} key={key}>
@@ -184,7 +197,6 @@ const Home: NextPage = () => {
                                 </Select>
                                 <Button
                                     ml={2}
-                                    colorScheme="blue"
                                     w="6rem"
                                     isDisabled={!selectedChain}
                                     onClick={() => activate(connector.id, parseInt(selectedChain!))}
@@ -224,7 +236,6 @@ const Home: NextPage = () => {
                                     isLoading={isLoading}
                                     ml={2}
                                     w="6rem"
-                                    colorScheme={"blue"}
                                     onClick={() => mutateGreeting()}
                                     size="sm"
                                 >
@@ -234,7 +245,7 @@ const Home: NextPage = () => {
                         </Box>
                         <Box mb={4} bg="gray.800" rounded={"lg"} p={4} border="1px" borderColor={"whiteAlpha.200"}>
                             <Text mb={2} fontSize={"lg"} fontWeight="semibold">
-                                Signature
+                                Create Signature
                             </Text>
                             <Flex>
                                 <Input
@@ -243,8 +254,9 @@ const Home: NextPage = () => {
                                     value={message}
                                     onChange={e => setMessage(e.target.value)}
                                     size="sm"
+                                    placeholder="Enter message"
                                 />
-                                <Button ml={2} w="6rem" colorScheme={"blue"} onClick={() => mutateSign()} size="sm">
+                                <Button ml={2} w="6rem" onClick={() => mutateSign()} size="sm">
                                     Sign
                                 </Button>
                             </Flex>
@@ -256,38 +268,34 @@ const Home: NextPage = () => {
                 )}
             </Box>
             <Box borderTop={"1px"} borderColor="whiteAlpha.200" pt={4} mt={8}>
-                <Wrap spacing={4}>
-                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
-                        <chakra.a
-                            href="https://docs.sequence.build/build-with-sequence/using-testnets"
-                            color="blue.400"
-                            target={"_blank"}
-                            fontWeight="semibold"
-                        >
-                            Using Sequence on testnets
-                        </chakra.a>
-                    </WrapItem>
-                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
-                        <chakra.a
-                            href="https://github.com/MetaMask/metamask-extension/issues/13622"
-                            color="blue.400"
-                            target={"_blank"}
-                            fontWeight="semibold"
-                        >
-                            MetaMask and Coinbase conflicts
-                        </chakra.a>
-                    </WrapItem>
-                    <WrapItem border="1px" borderColor={"whiteAlpha.200"} px={4} py={2} rounded="full">
-                        <chakra.a
-                            href="https://quocanhbk17.notion.site/Gnosis-Safe-Conection-Instruction-48a051a0e7904d58a87371240f510f56"
-                            color={"blue.400"}
-                            target={"_blank"}
-                            fontWeight={"semibold"}
-                        >
-                            Gnosis Safe Connection Instruction
-                        </chakra.a>
-                    </WrapItem>
-                </Wrap>
+                <Flex align="center">
+                    <Text mr={2} fontWeight="semibold">
+                        References:
+                    </Text>
+                    <Wrap spacing={2}>
+                        {refs.map(ref => (
+                            <WrapItem
+                                key={ref.url}
+                                border="1px"
+                                borderColor={"whiteAlpha.200"}
+                                bg="gray.800"
+                                px={2}
+                                py={1}
+                                rounded="md"
+                            >
+                                <chakra.a
+                                    fontSize={"sm"}
+                                    href={ref.url}
+                                    color="blue.400"
+                                    target={"_blank"}
+                                    fontWeight="semibold"
+                                >
+                                    {ref.text}
+                                </chakra.a>
+                            </WrapItem>
+                        ))}
+                    </Wrap>
+                </Flex>
             </Box>
         </Flex>
     )

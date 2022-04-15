@@ -74,8 +74,6 @@ const useWeb3WalletError = (
 const useWeb3WalletState = (
     connectorsData: Record<ConnectorId, { id: ConnectorId; name: string; connector: Connector; hooks: Web3ReactHooks }>
 ) => {
-    const toast = useToast({ duration: 2500, variant: "subtle" })
-
     const { connector, account, chainId, isActive, provider } = useWeb3React()
 
     const contractCaller = useRef<ContractCaller | null>(null)
@@ -83,7 +81,7 @@ const useWeb3WalletState = (
     const [currentConnector, setCurrentConnector] = useState<ConnectorId | null>(null)
 
     const activate = async (connectorId: ConnectorId, chainId?: number) => {
-        connector.deactivate()
+        await connector.deactivate()
         setCurrentConnector(connectorId)
         const newConnector = connectorsData[connectorId].connector
         newConnector instanceof WalletConnect || connector instanceof Sequence
@@ -91,9 +89,9 @@ const useWeb3WalletState = (
             : await newConnector.activate(!chainId ? undefined : getAddChainParameters(chainId))
     }
 
-    const deactivate = () => {
+    const deactivate = async () => {
+        await connector.deactivate()
         setCurrentConnector(null)
-        connector.deactivate()
     }
 
     useEffect(() => {
