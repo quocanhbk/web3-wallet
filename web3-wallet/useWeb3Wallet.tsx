@@ -10,49 +10,34 @@ import { MetaMask } from "@web3-react/metamask"
 import { Connector } from "@web3-react/types"
 import { Sequence } from "../custom-connectors/sequence"
 import { Gnosis } from "../custom-connectors/gnosis"
-import { useToast } from "@chakra-ui/react"
 
 export type Connectors = [MetaMask | WalletConnect | CoinbaseWallet | Sequence, Web3ReactHooks][]
 
 export type ConnectorId = "metaMask" | "walletConnect" | "coinbaseWallet" | "sequence" | "gnosis"
 
-export type ConnectorInfo = { id: ConnectorId; name: string; connector: Connector }
+export type ConnectorInfo = { id: ConnectorId; name: string; image: string; connector: Connector }
 
 export type ConnectorsData = Record<ConnectorId, ConnectorInfo & { hooks: Web3ReactHooks }>
 
+export const connectors: Omit<ConnectorInfo, "connector">[] = [
+    { id: "metaMask", image: "/icons/metamask.svg", name: "MetaMask" },
+    { id: "walletConnect", image: "/icons/walletConnect.svg", name: "WalletConnect" },
+    { id: "coinbaseWallet", image: "/icons/coinbase.png", name: "Coinbase Wallet" },
+    { id: "sequence", image: "/icons/sequence.svg", name: "Sequence" },
+    { id: "gnosis", image: "/icons/gnosis.png", name: "Gnosis Safe" },
+]
+
 const getConnectorInfo = (connector: Connector): ConnectorInfo => {
-    if (connector instanceof MetaMask) {
-        return {
-            id: "metaMask",
-            name: "MetaMask",
-            connector,
-        }
-    } else if (connector instanceof WalletConnect) {
-        return {
-            id: "walletConnect",
-            name: "WalletConnect",
-            connector,
-        }
-    } else if (connector instanceof CoinbaseWallet) {
-        return {
-            id: "coinbaseWallet",
-            name: "Coinbase Wallet",
-            connector,
-        }
-    } else if (connector instanceof Sequence) {
-        return {
-            id: "sequence",
-            name: "Sequence",
-            connector,
-        }
-    } else {
-        return {
-            id: "gnosis",
-            name: "Gnosis",
-            connector,
-        }
-    }
+    if (connector instanceof MetaMask) return { ...connectors[0], connector }
+    else if (connector instanceof WalletConnect) return { ...connectors[1], connector }
+    else if (connector instanceof CoinbaseWallet) return { ...connectors[2], connector }
+    else if (connector instanceof Sequence) return { ...connectors[3], connector }
+    else return { ...connectors[4], connector }
 }
+
+const getLastConnector = () => (localStorage.getItem("lastConnector") ?? "metaMask") as ConnectorId
+
+const setLastConenctor = (connectorId: ConnectorId) => localStorage.setItem("lastConnector", connectorId)
 
 const useWeb3WalletError = (
     connectorsData: Record<ConnectorId, { id: ConnectorId; name: string; connector: Connector; hooks: Web3ReactHooks }>,
@@ -82,7 +67,11 @@ const useWeb3WalletState = (
 
     const activate = async (connectorId: ConnectorId, chainId?: number) => {
         await connector.deactivate()
+
         setCurrentConnector(connectorId)
+
+        setLastConenctor(connectorId)
+
         const newConnector = connectorsData[connectorId].connector
         newConnector instanceof WalletConnect || connector instanceof Sequence
             ? await newConnector.activate(chainId)
@@ -95,7 +84,8 @@ const useWeb3WalletState = (
     }
 
     useEffect(() => {
-        connector.connectEagerly && connector.connectEagerly()
+        const lastConnector = connectorsData[getLastConnector()].connector
+        lastConnector.connectEagerly && lastConnector.connectEagerly()
     }, [])
 
     const error = useWeb3WalletError(connectorsData, currentConnector)

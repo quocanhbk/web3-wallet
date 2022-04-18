@@ -21,7 +21,7 @@ export class Sequence extends Connector {
     }
 
     public async activate(chainId?: number): Promise<void> {
-        this.actions.startActivation()
+        const cancelActivation = this.actions.startActivation()
 
         await this.startListening(chainId).catch((error: Error) => {
             this.actions.reportError(error)
@@ -35,7 +35,13 @@ export class Sequence extends Connector {
                 .catch((error: Error) => {
                     this.actions.reportError(error)
                 })
+        } else {
+            cancelActivation()
         }
+    }
+
+    public async connectEagerly(chainId?: number) {
+        this.activate(chainId)
     }
 
     public deactivate(...args: unknown[]): void | Promise<void> {

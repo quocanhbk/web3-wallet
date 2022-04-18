@@ -5,6 +5,7 @@ import type { Actions } from "@web3-react/types"
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider"
 import SafeAppsSDK, { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import { ethers } from "ethers"
+import { Console } from "console"
 
 export class Gnosis extends Connector {
     public safe?: SafeInfo
@@ -31,9 +32,8 @@ export class Gnosis extends Connector {
         await this.startListening().catch((error: Error) => {
             this.actions.reportError(error)
         })
-
         if (this.safe) {
-            this.actions.update({ accounts: [this.safe!.safeAddress], chainId: this.safe!.chainId })
+            this.actions.update({ accounts: [this.safe.safeAddress], chainId: this.safe.chainId })
         }
     }
 

@@ -10,26 +10,36 @@ import {
     Input,
     Img,
     chakra,
-    ChakraProvider,
-    UnorderedList,
-    ListItem,
-    HStack,
     Wrap,
     WrapItem,
 } from "@chakra-ui/react"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query"
-import useWeb3Wallet, { CHAINS, ConnectorId } from "../web3-wallet"
+import useWeb3Wallet, { CHAINS, ConnectorId, connectors } from "../web3-wallet"
 
 const refs = [
-    { text: "Using Sequence on testnets", url: "https://docs.sequence.one/getting-started/testnet" },
-    { text: "MetaMask and Coinbase conflicts", url: "https://github.com/MetaMask/metamask-extension/issues/13622" },
+    {
+        text: "Sequence Wallet Refs",
+        url: "https://www.notion.so/quocanhbk17/Sequence-Wallet-8658aa552e644629908a7100c6c4a35b",
+        color: "yellow.400",
+    },
+    {
+        text: "Using Sequence on testnets",
+        url: "https://docs.sequence.one/getting-started/testnet",
+        color: "orange.400",
+    },
+    {
+        text: "MetaMask and Coinbase conflicts",
+        url: "https://github.com/MetaMask/metamask-extension/issues/13622",
+        color: "red.400",
+    },
     {
         text: "Gnosis Safe connection instruction",
         url: "https://quocanhbk17.notion.site/Gnosis-Safe-Conection-Instruction-48a051a0e7904d58a87371240f510f56",
+        color: "green.400",
     },
-    { text: "Source code", url: "https://github.com/quocanhbk/web3-wallet" },
+    { text: "Source code", url: "https://github.com/quocanhbk/web3-wallet", color: "blue.400" },
 ]
 
 const Home: NextPage = () => {
@@ -68,10 +78,14 @@ const Home: NextPage = () => {
         initialData: 0,
     })
 
-    const { data: greeting } = useQuery("greeting", () => contractCaller.current?.Greeter.getGreeting(), {
-        enabled: !!contractCaller.current && !!account && chain?.chainId === 1,
-        initialData: "",
-    })
+    const { data: greeting, isLoading: isLoadingGreeting } = useQuery(
+        ["greeting", account],
+        () => contractCaller.current?.Greeter.getGreeting(),
+        {
+            enabled: !!contractCaller.current && !!account && chain?.chainId === 1,
+            initialData: "",
+        }
+    )
 
     const { mutate: mutateGreeting, isLoading } = useMutation(
         () => contractCaller.current!.Greeter.setGreeting(greet),
@@ -107,14 +121,6 @@ const Home: NextPage = () => {
         },
     })
 
-    const connectors = [
-        { connector: "metaMask", image: "/icons/metamask.svg", name: "MetaMask" },
-        { connector: "walletConnect", image: "/icons/walletConnect.svg", name: "WalletConnect" },
-        { connector: "coinbaseWallet", image: "/icons/coinbase.png", name: "Coinbase Wallet" },
-        { connector: "sequence", image: "/icons/sequence.svg", name: "Sequence" },
-        { connector: "gnosis", image: "/icons/gnosis.png", name: "Gnosis Safe" },
-    ]
-
     return (
         <Flex direction="column" minH="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
             <Box w="25rem" maxW="full" flex={1}>
@@ -132,8 +138,8 @@ const Home: NextPage = () => {
                                 borderColor={"whiteAlpha.200"}
                                 _hover={{ bg: "whiteAlpha.200" }}
                                 _active={{ bg: "whiteAlpha.100" }}
-                                key={c.connector}
-                                onClick={() => handleConnect(c.connector as ConnectorId)}
+                                key={c.id}
+                                onClick={() => handleConnect(c.id)}
                                 cursor="pointer"
                             >
                                 <Flex align="center" w="full" justify="center">
@@ -167,11 +173,31 @@ const Home: NextPage = () => {
                                     <Text>Balance</Text>
                                 </Stack>
                                 <Stack direction={"column"} overflow="hidden" ml={4} flex={1}>
-                                    <Text color="orange.400">{connector.name}</Text>
+                                    <Flex align="center">
+                                        <Img
+                                            src={connectors.find(c => c.name === connector.name)?.image}
+                                            alt={connector.name}
+                                            boxSize="1rem"
+                                            mr={2}
+                                        />
+                                        <Text
+                                            color={
+                                                connector.id === "metaMask"
+                                                    ? "orange.400"
+                                                    : connector.id === "gnosis"
+                                                    ? "green.400"
+                                                    : connector.id === "sequence"
+                                                    ? "pink.400"
+                                                    : "blue.400"
+                                            }
+                                        >
+                                            {connector.name}
+                                        </Text>
+                                    </Flex>
                                     <Text w="full" isTruncated color="blue.400">
                                         {account}
                                     </Text>
-                                    <Text color="teal.400">{chain?.name}</Text>
+                                    <Text color="teal.400">{chain?.name ?? "Unknown"}</Text>
                                     <Text color="green.400">{balance}</Text>
                                 </Stack>
                             </Flex>
@@ -218,7 +244,7 @@ const Home: NextPage = () => {
                             <Text fontSize={"sm"}>
                                 Greeting:{" "}
                                 <chakra.span color="green.400" fontWeight={"semibold"}>
-                                    {greeting}
+                                    {isLoadingGreeting ? "Loading..." : greeting}
                                 </chakra.span>{" "}
                             </Text>
                             <Text fontSize={"sm"} mb={1}>
@@ -238,6 +264,7 @@ const Home: NextPage = () => {
                                     w="6rem"
                                     onClick={() => mutateGreeting()}
                                     size="sm"
+                                    isDisabled={!greet}
                                 >
                                     Update
                                 </Button>
@@ -256,7 +283,7 @@ const Home: NextPage = () => {
                                     size="sm"
                                     placeholder="Enter message"
                                 />
-                                <Button ml={2} w="6rem" onClick={() => mutateSign()} size="sm">
+                                <Button ml={2} w="6rem" onClick={() => mutateSign()} size="sm" isDisabled={!message}>
                                     Sign
                                 </Button>
                             </Flex>
@@ -269,16 +296,14 @@ const Home: NextPage = () => {
             </Box>
             <Box borderTop={"1px"} borderColor="whiteAlpha.200" pt={4} mt={8}>
                 <Flex align="center">
-                    <Text mr={2} fontWeight="semibold">
-                        References:
-                    </Text>
                     <Wrap spacing={2}>
+                        <Text fontWeight="semibold">References:</Text>
                         {refs.map(ref => (
                             <WrapItem
                                 key={ref.url}
                                 border="1px"
                                 borderColor={"whiteAlpha.200"}
-                                bg="gray.800"
+                                bg={"gray.800"}
                                 px={2}
                                 py={1}
                                 rounded="md"
@@ -286,7 +311,7 @@ const Home: NextPage = () => {
                                 <chakra.a
                                     fontSize={"sm"}
                                     href={ref.url}
-                                    color="blue.400"
+                                    color={ref.color}
                                     target={"_blank"}
                                     fontWeight="semibold"
                                 >
