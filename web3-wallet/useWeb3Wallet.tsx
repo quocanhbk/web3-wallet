@@ -6,6 +6,7 @@ import { useQuery } from "react-query"
 import { ethers, providers } from "ethers"
 import { ContractCaller } from "../contracts"
 import { CoinbaseWallet } from "@web3-react/coinbase-wallet"
+
 import { MetaMask } from "@web3-react/metamask"
 import { Connector } from "@web3-react/types"
 import { Sequence } from "../custom-connectors/sequence"
@@ -75,6 +76,9 @@ const useWeb3WalletState = (
         const newConnector = connectorsData[connectorId].connector
         newConnector instanceof WalletConnect || connector instanceof Sequence
             ? await newConnector.activate(chainId)
+            : newConnector instanceof MetaMask &&
+              /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            ? window.open("https://metamask.app.link/dapp/web3-wallet-demo.vercel.app/")
             : await newConnector.activate(!chainId ? undefined : getAddChainParameters(chainId))
     }
 
