@@ -49,8 +49,13 @@ const Home: NextPage = () => {
     const toast = useToast({ duration: 2500, variant: "subtle" })
 
     const [selectedChain, setSelectedChain] = useState<string>()
+
     const [message, setMessage] = useState("")
+
     const [greet, setGreet] = useState("")
+
+    const [userAgent, setUserAgent] = useState("")
+
     useEffect(() => {
         if (error) {
             if (error.message.includes("Disconnected from chain")) {
@@ -121,12 +126,17 @@ const Home: NextPage = () => {
         },
     })
 
+    useEffect(() => {
+        setUserAgent(navigator.userAgent)
+    }, [])
+
     return (
         <Flex direction="column" minH="100vh" bg="gray.900" color="whiteAlpha.900" p={[4, 8]}>
             <Box w="25rem" maxW="full" flex={1}>
                 <Heading mb={4} textAlign="center">
                     Web3Wallet Demo
                 </Heading>
+                <Text mb={4}>{userAgent}</Text>
                 {!isActive ? (
                     <Stack spacing={4}>
                         {connectors.map(c => (
