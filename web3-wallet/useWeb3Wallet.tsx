@@ -77,7 +77,8 @@ const useWeb3WalletState = (
         newConnector instanceof WalletConnect || connector instanceof Sequence
             ? await newConnector.activate(chainId)
             : newConnector instanceof MetaMask &&
-              /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+              /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
+              !window.ethereum
             ? window.open("https://metamask.app.link/dapp/web3-wallet-demo.vercel.app/")
             : await newConnector.activate(!chainId ? undefined : getAddChainParameters(chainId))
     }
